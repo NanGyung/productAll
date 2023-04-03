@@ -250,11 +250,17 @@
         `<div>${p.quantity}</div>` +
         `<div>${p.price}</div>`;
 
+      const defaultBody = document.querySelector('.wrap .body');
+      // 목록 초기
+      const defaultList = defaultBody.children[0].outerHTML;
+
       const list = res => {
         if (res.header.rtcd == '00') {
+          console.log(res.data);
           const html = res.data.map(p => makeRow(p)).join('');
-          document.querySelector('.wrap .body').innerHTML = html;
+          defaultBody.innerHTML = html;
         } else {
+          defaultBody.innerHTML = defaultList;
           throw new Error(`${res.header.rtmsg}`);
         }
       };
@@ -481,7 +487,7 @@
       //삭제선택처리
       const $delPartsBtn = document.getElementById('delPartsBtn');
       const delParts = res => {
-        if (res.header.rtcd == 0) {
+        if (res.header.rtcd == '00') {
           list_h();
         }
       };

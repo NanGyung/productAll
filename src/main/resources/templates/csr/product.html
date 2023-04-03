@@ -260,6 +260,7 @@
           const html = res.data.map(p => makeRow(p)).join('');
           defaultBody.innerHTML = html;
         } else {
+          // 상품목록이 없을 경우 초기목록 화면에 출력
           defaultBody.innerHTML = defaultList;
           throw new Error(`${res.header.rtmsg}`);
         }

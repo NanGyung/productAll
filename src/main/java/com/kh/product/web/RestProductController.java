@@ -5,10 +5,8 @@ import com.kh.product.svc.ProductSVC;
 import com.kh.product.web.exception.RestBizException;
 import com.kh.product.web.rest.SaveRest;
 import com.kh.product.web.rest.UpdateRest;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,16 +23,19 @@ public class RestProductController {
   //상품등록
   @PostMapping
   public RestResponse<Object> save(
-      @Valid @RequestBody SaveRest saveRest,
-      BindingResult bindingResult
+      @RequestBody SaveRest saveRest
   ){
     RestResponse<Object> res = null;
 
     //등록
     Product product = new Product();
+
+  try{
+    Long quantity = saveRest.getQuantity();
+    Long price = saveRest.getPrice();
     product.setPname(saveRest.getPname());
-    product.setQuantity(saveRest.getQuantity());
-    product.setPrice(saveRest.getPrice());
+    product.setQuantity(quantity);
+    product.setPrice(price);
 
     Long pid = productSVC.save(product);
     product.setPid(pid);
@@ -44,6 +45,9 @@ public class RestProductController {
     }else{
       res = RestResponse.createRestResponse("99", "실패", "서버오류");
     }
+  }catch(NumberFormatException e){
+    res = RestResponse.createRestResponse("99", "숫자만 입력해주세요!","");
+  }
     return res;
   }
 
@@ -66,8 +70,7 @@ public class RestProductController {
   @PatchMapping("/{id}")
   public RestResponse<Object> update(
       @PathVariable("id") Long pid,
-      @Valid@RequestBody UpdateRest updateRest,
-      BindingResult bindingResult
+      @RequestBody UpdateRest updateRest
   ){
     RestResponse<Object> res = null;
 

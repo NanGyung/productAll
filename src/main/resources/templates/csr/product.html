@@ -336,7 +336,7 @@
         e => {
           const pid = $productFields.pid.value.trim();
           if (!pid) {
-            $msg.err = '상품아이디를 입력하세요';
+            $msg.err.textContent = '상품아이디를 입력하세요';
             return;
           }
           //읽기모드 버튼 보이기

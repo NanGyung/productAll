@@ -5,8 +5,10 @@ import com.kh.product.svc.ProductSVC;
 import com.kh.product.web.exception.RestBizException;
 import com.kh.product.web.rest.SaveRest;
 import com.kh.product.web.rest.UpdateRest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,9 +24,11 @@ public class RestProductController {
 
   //상품등록
   @PostMapping
-  public RestResponse<Object> save(@RequestBody SaveRest saveRest){
+  public RestResponse<Object> save(
+      @Valid @RequestBody SaveRest saveRest,
+      BindingResult bindingResult
+  ){
     RestResponse<Object> res = null;
-//    log.info("saveRest={}",saveRest);
 
     //등록
     Product product = new Product();
@@ -51,7 +55,6 @@ public class RestProductController {
     //1)상품존재유무판단
     if(!productSVC.isExist(pid)){
       throw new RestBizException("99","해당 상품이 없습니다.");
-//      res = RestResponse.createRestResponse("99", "해당 상품이 없습니다.");
     }
 
     Optional<Product> findedProduct = productSVC.findById(pid);
@@ -63,7 +66,8 @@ public class RestProductController {
   @PatchMapping("/{id}")
   public RestResponse<Object> update(
       @PathVariable("id") Long pid,
-      @RequestBody UpdateRest updateRest
+      @Valid@RequestBody UpdateRest updateRest,
+      BindingResult bindingResult
   ){
     RestResponse<Object> res = null;
 

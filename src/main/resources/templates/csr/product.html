@@ -189,46 +189,7 @@
         $productFields.price.value = '';
       };
 
-      // 목록
-      const makeRow = p =>
-        `<div><input type='checkbox' name='chk' value='${p.pid}'/></div>` +
-        `<div>${p.pid}</div>` +
-        `<div>${p.pname}</div>` +
-        `<div>${p.quantity}</div>` +
-        `<div>${p.price}</div>`;
-
-      const list = res => {
-        if (res.header.rtcd == '00') {
-          const html = res.data.map(p => makeRow(p)).join('');
-          document.querySelector('.wrap .body').innerHTML = html;
-        } else {
-          throw new Error(`${res.header.rtmsg}`);
-        }
-      };
-
-      const list_h = e => {
-        const url = `http://localhost:9080/api/products`;
-        ajax
-          .get(url)
-          .then(res => res.json())
-          .then(list)
-          .catch(err => errMsg(err.message));
-      };
-      $allBtn.list.addEventListener('click', list_h, false);
-
-      // 등록
-      const add = res => {
-        if (res.header.rtcd == '00') {
-          successMsg(`상품번호: ${res.data.pid} 등록완료!`);
-          document.querySelector('form').reset();
-          list_h();
-        } else {
-          throw new Error(`${res.header.rtmsg}`);
-        }
-      };
-      const add_h = e => {
-        e.preventDefault(); //기본이벤트 막기
-
+      function fieldVarification() {
         const $fieldError = document.querySelectorAll('.fieldError');
         const clear = () =>
           Array.from($fieldError).forEach(ele => (ele.textContent = ''));
@@ -279,6 +240,49 @@
         } else {
           clear();
         }
+      }
+
+      // 목록
+      const makeRow = p =>
+        `<div><input type='checkbox' name='chk' value='${p.pid}'/></div>` +
+        `<div>${p.pid}</div>` +
+        `<div>${p.pname}</div>` +
+        `<div>${p.quantity}</div>` +
+        `<div>${p.price}</div>`;
+
+      const list = res => {
+        if (res.header.rtcd == '00') {
+          const html = res.data.map(p => makeRow(p)).join('');
+          document.querySelector('.wrap .body').innerHTML = html;
+        } else {
+          throw new Error(`${res.header.rtmsg}`);
+        }
+      };
+
+      const list_h = e => {
+        const url = `http://localhost:9080/api/products`;
+        ajax
+          .get(url)
+          .then(res => res.json())
+          .then(list)
+          .catch(err => errMsg(err.message));
+      };
+      $allBtn.list.addEventListener('click', list_h, false);
+
+      // 등록
+      const add = res => {
+        if (res.header.rtcd == '00') {
+          successMsg(`상품번호: ${res.data.pid} 등록완료!`);
+          document.querySelector('form').reset();
+          list_h();
+        } else {
+          throw new Error(`${res.header.rtmsg}`);
+        }
+      };
+      const add_h = e => {
+        e.preventDefault(); //기본이벤트 막기
+        // 필드검증
+        fieldVarification();
 
         const url = `http://localhost:9080/api/products`;
         const payload = {
@@ -287,12 +291,20 @@
           price: $productFields.price.value,
         };
 
-        //유효성체크
-        ajax
-          .post(url, payload)
-          .then(res => res.json())
-          .then(add)
-          .catch(err => errMsg(err.message));
+        // 필드 입력값이 없으면 저장하지 않음
+        if (
+          pname.value.trim().length == 0 ||
+          price.value.trim().length == 0 ||
+          quantity.value.trim().length == 0
+        ) {
+          return;
+        } else {
+          ajax
+            .post(url, payload)
+            .then(res => res.json())
+            .then(add)
+            .catch(err => errMsg(err.message));
+        }
       };
       $allBtn.add.addEventListener('click', add_h, false);
 
@@ -352,17 +364,31 @@
         }
       };
       const modify_h = (e, pid) => {
+        e.preventDefault(); //기본이벤트 막기
+        // 필드검증
+        fieldVarification();
+
         const url = `http://localhost:9080/api/products/${pid}`;
         const payload = {
           pname: $productFields.pname.value,
           quantity: $productFields.quantity.value,
           price: $productFields.price.value,
         };
-        ajax
-          .patch(url, payload)
-          .then(res => res.json())
-          .then(res => modify(res))
-          .catch(err => errMsg(err.message));
+
+        // 필드 입력값이 없으면 저장하지 않음
+        if (
+          pname.value.trim().length == 0 ||
+          price.value.trim().length == 0 ||
+          quantity.value.trim().length == 0
+        ) {
+          throw new Error('입력값이 없습니다.');
+        } else {
+          ajax
+            .patch(url, payload)
+            .then(res => res.json())
+            .then(res => modify(res))
+            .catch(err => errMsg(err.message));
+        }
       };
       $allBtn.modify.addEventListener(
         'click',

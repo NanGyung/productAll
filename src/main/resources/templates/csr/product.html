@@ -287,9 +287,6 @@
           price: $productFields.price.value,
         };
 
-        //전송
-        // frm.submit();
-
         //유효성체크
         ajax
           .post(url, payload)
@@ -463,7 +460,7 @@
         }
       };
       const delParts_h = e => {
-        if (!confirm('삭제하시겠습니까')) return;
+        if (!confirm('삭제하시겠습니까?')) return;
         const $chks = document.querySelectorAll('#productList input[name=chk]');
         const chks = Array.from($chks)
           .filter(input => input.checked)

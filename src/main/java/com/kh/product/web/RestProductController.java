@@ -51,6 +51,7 @@ public class RestProductController {
     //1)상품존재유무판단
     if(!productSVC.isExist(pid)){
       throw new RestBizException("99","해당 상품이 없습니다.");
+//      res = RestResponse.createRestResponse("99", "해당 상품이 없습니다.");
     }
 
     Optional<Product> findedProduct = productSVC.findById(pid);
